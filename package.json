@@ -1,0 +1,8 @@
+{
+  "name": "cybexjsx",
+  "version": "0.0.1",
+  "description": "a js lib for Cybex chain",
+  "main": "index.js",
+  "author": "ldwformat@gmail.com",
+  "license": "MIT"
+}
