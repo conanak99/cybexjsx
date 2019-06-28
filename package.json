@@ -6,7 +6,9 @@
   "author": "ldwformat@gmail.com",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.ejs.json && tsc -p tsconfig.cjs.json"
+    "build": "tsc -p tsconfig.ejs.json && tsc -p tsconfig.cjs.json",
+    "test": "jest --verbose",
+    "test:watch": "jest --watch --verbose"
   },
   "devDependencies": {
     "@types/assert": "^1.4.2",
@@ -19,5 +21,23 @@
   "dependencies": {
     "assert": "^2.0.0",
     "wolfy87-eventemitter": "^5.2.6"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(tsx?|jsx?)$": "ts-jest"
+    },
+    "testRegex": "__test__/.+(\\.|/)(test|spec)\\.(tsx?|jsx?)$",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "wasm",
+      "json"
+    ]
   }
 }

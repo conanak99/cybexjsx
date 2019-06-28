@@ -19,9 +19,11 @@ type ChainWsConfig = {
   subMethods: Set<string>;
   unsubMethods: Set<string>;
   apiTypes: string[];
+  debugMode: boolean;
+  autoReconnect: boolean;
 };
 
-class ChainWebSocket extends EventEmitter {
+export class ChainWebSocket extends EventEmitter {
   static WsEvents = {
     DISCONNECT: "DISCONNECT"
   };
@@ -35,19 +37,21 @@ class ChainWebSocket extends EventEmitter {
     "unsubscribe_from_accounts",
     "unsubscribe_from_market"
   ]);
-  static DefaultApiType = ["database", "history", "network"];
+  static DefaultApiType = ["database", "history", "network_broadcast"];
   static DefaultWsConfig: Partial<ChainWsConfig> = {
     wsClient: getWebSocketClient(),
     apiTypes: ChainWebSocket.DefaultApiType,
     subMethods: ChainWebSocket.DefaultSubMothods,
     unsubMethods: ChainWebSocket.DefaultUnsubMothods,
-    autoRestoreStateAfterReconnect: false
+    debugMode: false,
+    autoRestoreStateAfterReconnect: false,
+    autoReconnect: false
   };
   static async getInstanceWithWs(
     url: string,
     config?: Partial<ChainWsConfig>
   ): Promise<ChainWebSocket> {
-    let _config = { ...config, ...ChainWebSocket.DefaultWsConfig };
+    let _config = { ...ChainWebSocket.DefaultWsConfig, ...config };
     let ws = new ChainWebSocket({ url, ..._config } as any);
     await ws.connect();
     return ws;
@@ -69,13 +73,14 @@ class ChainWebSocket extends EventEmitter {
   ws: WebSocket;
   _callId = 1;
 
-  get callId() {
+  private get callId() {
     return this._callId++;
   }
 
   constructor(public config: ChainWsConfig) {
     super();
   }
+
   initState() {
     this._callId = 1;
     this.subs = {};
@@ -93,13 +98,17 @@ class ChainWebSocket extends EventEmitter {
         resolve(e);
       });
       this.ws.addEventListener("close", (e: any) => {
+        this.rejectAllCbs();
         this.emit(ChainWebSocket.WsEvents.DISCONNECT, e);
         console.error("WsConnect Closed");
-        this.connect(this.config.autoRestoreStateAfterReconnect);
+        if (this.config.autoReconnect) {
+          this.connect(this.config.autoRestoreStateAfterReconnect);
+        }
       });
-      this.ws.addEventListener("message", msg =>
-        this.listener(convertResultUniversal(msg.data))
-      );
+      this.ws.addEventListener("message", msg => {
+        this.log(typeof msg.data, msg.data);
+        this.listener(convertResultUniversal(JSON.parse(msg.data)));
+      });
     });
     await this.login();
     if (restoreState) {
@@ -127,11 +136,10 @@ class ChainWebSocket extends EventEmitter {
   }
 
   api(apiName: string) {
-    return (method: string, ...rest: any[]) =>
-      this.call.bind(this, apiName, method, rest);
+    return (method: string, ...rest: any[]) => this.call(apiName, method, rest);
   }
 
-  async call(apiName: string, method: string, params: any[]) {
+  async call(apiName: string, method: string, params: any[] = []) {
     let callId = this.callId;
     let apiId = this.apiIds[apiName] || 1;
     if (this.ws.readyState !== 1) {
@@ -190,10 +198,21 @@ class ChainWebSocket extends EventEmitter {
     });
   }
 
-  pickCallback(
+  private async listener(response: Promise<RPCResultUniversal>) {
+    return response
+      .then(res => this.pickCallback(res.id, res.isSub).resolve(res.result))
+      .catch((errRes: RPCResultUniversal) => {
+        console.error("Error Response: ", errRes);
+        this.pickCallback(errRes.id).reject(errRes.result);
+      })
+      .catch(err => console.error("RPC Response Error: ", err));
+  }
+
+  private pickCallback(
     id: string | number,
     isSub = false
   ): { resolve: CallableFunction; reject: CallableFunction } {
+    this.log("[PickCallback]", id, this.cbs);
     let callback;
     if (!isSub) {
       callback = this.cbs[id];
@@ -208,13 +227,26 @@ class ChainWebSocket extends EventEmitter {
     return callback;
   }
 
-  async listener(response: Promise<RPCResultUniversal>) {
-    return response
-      .then(res => this.pickCallback(res.id, res.isSub).resolve(res.result))
-      .catch((errRes: RPCResultUniversal) =>
-        this.pickCallback(errRes.id).reject(errRes.result)
+  private rejectAllCbs() {
+    Object.keys(this.cbs).forEach(id =>
+      this.listener(
+        convertResultUniversal({
+          jsonrpc: "2.0",
+          error: "Connection Closed",
+          id
+        })
       )
-      .catch(err => console.error("RPC Response Error: ", err));
+    );
+  }
+
+  close() {
+    this.ws.close();
+  }
+
+  log(...params: any[]) {
+    if (this.config.debugMode) {
+      console.log(...params);
+    }
   }
 }
 

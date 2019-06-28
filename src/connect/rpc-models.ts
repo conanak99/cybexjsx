@@ -1,14 +1,14 @@
 export interface RPCResult {
-  id: number;
+  id: CallID;
   jsonrpc: "2.0";
   result: any;
 }
 export interface RPCRejectResult {
-  id: number;
+  id: CallID;
   jsonrpc: "2.0";
   error: any;
 }
-type CallID = number;
+type CallID = number | string;
 type ApiID = number;
 type Method = string;
 type Params = any[];
