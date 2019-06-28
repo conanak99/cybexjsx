@@ -6,7 +6,7 @@
   "author": "ldwformat@gmail.com",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.ejs.json && tsc -p tsconfig.cjs.json",
+    "build": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
     "test": "jest --verbose",
     "test:watch": "jest --watch --verbose"
   },
