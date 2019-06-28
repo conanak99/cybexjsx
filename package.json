@@ -2,7 +2,22 @@
   "name": "cybexjsx",
   "version": "0.0.1",
   "description": "a js lib for Cybex chain",
-  "main": "index.js",
+  "main": "ejs/index.js",
   "author": "ldwformat@gmail.com",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.ejs.json && tsc -p tsconfig.cjs.json"
+  },
+  "devDependencies": {
+    "@types/assert": "^1.4.2",
+    "@types/jest": "^24.0.15",
+    "awesome-typescript-loader": "^5.2.1",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "assert": "^2.0.0",
+    "wolfy87-eventemitter": "^5.2.6"
+  }
 }
