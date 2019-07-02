@@ -12,7 +12,15 @@
   },
   "devDependencies": {
     "@types/assert": "^1.4.2",
+    "@types/bigi": "^1.4.2",
+    "@types/bs58": "^4.0.0",
+    "@types/bytebuffer": "^5.0.40",
+    "@types/create-hash": "^1.2.0",
+    "@types/create-hmac": "^1.1.0",
+    "@types/deep-equal": "^1.0.1",
+    "@types/ecurve": "^1.0.0",
     "@types/jest": "^24.0.15",
+    "@types/node": "^12.0.10",
     "awesome-typescript-loader": "^5.2.1",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
@@ -20,6 +28,16 @@
   },
   "dependencies": {
     "assert": "^2.0.0",
+    "bigi": "^1.4.2",
+    "bs58": "^4.0.1",
+    "buffer": "^5.2.1",
+    "bytebuffer": "^5.0.1",
+    "create-hash": "^1.2.0",
+    "create-hmac": "^1.1.7",
+    "crypto-js": "^3.1.9-1",
+    "deep-equal": "^1.0.1",
+    "ecurve": "^1.0.6",
+    "secure-random": "^1.1.2",
     "wolfy87-eventemitter": "^5.2.6"
   },
   "jest": {
@@ -28,8 +46,7 @@
     },
     "testRegex": "__test__/.+(\\.|/)(test|spec)\\.(tsx?|jsx?)$",
     "moduleDirectories": [
-      "node_modules",
-      "src"
+      "node_modules"
     ],
     "moduleFileExtensions": [
       "ts",
