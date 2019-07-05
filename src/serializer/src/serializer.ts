@@ -1,11 +1,11 @@
-import * as ByteBuffer from "bytebuffer";
+import ByteBuffer from "bytebuffer";
 import EC from "./error_with_cause";
 declare const process;
 declare const Buffer;
 const HEX_DUMP =
   process && process.env.npm_config__graphene_serializer_hex_dump;
 
-class Serializer<T> {
+export class Serializer<T> {
   static printDebug;
   operation_name;
   types;
@@ -90,7 +90,7 @@ class Serializer<T> {
     return;
   }
 
-  fromObject(serialized_object: T) {
+  fromObject(serialized_object: T): Serializer<T> {
     var result = {};
     var field: any = null;
     try {
@@ -108,7 +108,7 @@ class Serializer<T> {
       EC.throw(this.operation_name + "." + field, error);
     }
 
-    return result;
+    return result as Serializer<T>;
   }
 
   /**

@@ -1,5 +1,5 @@
 // const { Long } from "require("long")";
-import Long = require("long");
+import Long from "long";
 
 import v from "../../serializer/src/SerializerValidation";
 
@@ -7,10 +7,7 @@ var DB_MAX_INSTANCE_ID = Long.fromNumber(Math.pow(2, 48) - 1);
 
 class ObjectId {
   [p: string]: any;
-  constructor(space, type, instance) {
-    this.space = space;
-    this.type = type;
-    this.instance = instance;
+  constructor(public space, public type, public instance) {
     var instance_string = this.instance.toString();
     var ObjectId = `${this.space}.${this.type}.${instance_string}`;
     if (!v.is_digits(instance_string)) {

@@ -1,8 +1,8 @@
 /** Exception nesting.  */
 class ErrorWithCause {
   [param: string]: any;
-  constructor(message, cause) {
-    this.message = message;
+  stack: string = "";
+  constructor(public message, cause) {
     if (
       typeof cause !== "undefined" && cause !== null ? cause.message : undefined
     ) {

@@ -1198,7 +1198,14 @@ export const transaction = new Serializer("transaction", {
   operations: array(operation),
   extensions: set(future_extensions)
 });
-
+export type SignedTransaction = {
+  ref_block_num: number;
+  ref_block_prefix: number;
+  expiration: number;
+  operations: Array<[number, any]>;
+  extensions: Array<[number, any]>;
+  signatures: Array<string>;
+};
 export const signed_transaction = new Serializer("signed_transaction", {
   ref_block_num: uint16,
   ref_block_prefix: uint32,

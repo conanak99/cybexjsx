@@ -56,7 +56,7 @@ export class ChainWebSocket extends EventEmitter {
     await ws.connect();
     return ws;
   }
-
+  chainID: string = "";
   apiIds = {};
   cbs = {};
   subs: {
@@ -111,6 +111,7 @@ export class ChainWebSocket extends EventEmitter {
       });
     });
     await this.login();
+    await this.updateChainID();
     if (restoreState) {
       let rawSubs = this.subs;
       await Promise.all(
@@ -135,11 +136,16 @@ export class ChainWebSocket extends EventEmitter {
     );
   }
 
-  api(apiName: string) {
-    return (method: string, ...rest: any[]) => this.call(apiName, method, rest);
+  api<T = any>(apiName: string) {
+    return (method: string, ...rest: any[]) =>
+      this.call<T>(apiName, method, rest);
   }
 
-  async call(apiName: string, method: string, params: any[] = []) {
+  async updateChainID() {
+    this.chainID = await this.api("database")("get_chain_id");
+  }
+
+  async call<T = any>(apiName: string, method: string, params: any[] = []) {
     let callId = this.callId;
     let apiId = this.apiIds[apiName] || 1;
     if (this.ws.readyState !== 1) {
@@ -188,7 +194,7 @@ export class ChainWebSocket extends EventEmitter {
     };
     // this.send_life = max_send_life;
 
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       this.cbs[callId] = {
         time: new Date(),
         resolve,
