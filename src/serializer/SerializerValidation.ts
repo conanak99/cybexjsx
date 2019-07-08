@@ -1,6 +1,6 @@
 // import { Long } from "bytebuffer";
-import ChainTypes from "../../chain/src/ChainTypes";
-import Long = require("long");
+import { ChainTypes } from "../chain/ChainTypes";
+import Long from "long";
 
 var MAX_SAFE_INT = 9007199254740991;
 var MIN_SAFE_INT = -9007199254740991;

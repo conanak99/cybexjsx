@@ -1,8 +1,8 @@
-import Serializer from "./src/serializer";
-import fp from "./src/FastParser";
-import types from "./src/types";
-import * as ops from "./src/operations";
-import template from "./src/template";
-import SerializerValidation from "./src/SerializerValidation";
+import Serializer from "./serializer";
+import fp from "./FastParser";
+import types from "./types";
+import * as ops from "./operations";
+import template from "./template";
+import SerializerValidation from "./SerializerValidation";
 
 export { Serializer, fp, types, ops, template, SerializerValidation };

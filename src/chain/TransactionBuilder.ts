@@ -1,10 +1,10 @@
 import assert from "assert";
-import { Signature, PublicKey, hash, PrivateKey } from "../../ecc";
-import { ops, Serializer } from "../../serializer";
+import { Signature, PublicKey, hash, PrivateKey } from "../ecc";
+import { ops, Serializer } from "../serializer";
 import { OperationManager } from "./Operation";
-import ChainTypes, { CybexTypes } from "./ChainTypes";
-import { ChainWebSocket } from "./../../connect/cybex-ws";
-import { SignedTransaction } from "../../serializer/src/operations";
+import { CybexTypes } from "./ChainTypes";
+import { ChainWebSocket } from "./../connect/cybex-ws";
+import { SignedTransaction } from "../serializer/operations";
 var head_block_time_string: any, committee_min_review: number;
 class DefaultTrParams implements SignedTransaction {
   ref_block_num = 0;
@@ -23,7 +23,7 @@ const DefaultOptions = {
   debug: false
 };
 type TBOptions = typeof DefaultOptions;
-class TransactionBuilder {
+export class TransactionBuilder {
   signer_private_keys: [PrivateKey, PublicKey][] = [];
   opManager = OperationManager.getOpManager();
   tr_buffer: Buffer;

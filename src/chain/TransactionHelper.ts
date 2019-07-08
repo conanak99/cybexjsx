@@ -2,8 +2,8 @@ import * as secureRandom from "secure-random";
 
 const Long = require("long");
 
-import { Signature } from "../../ecc";
-import { ops } from "../../serializer";
+import { Signature } from "../ecc";
+import { ops } from "../serializer";
 var helper: any = {};
 
 helper.unique_nonce_entropy = null;

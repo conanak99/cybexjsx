@@ -4,7 +4,7 @@ const { Hex: encHex, Base64: encBase64 } = enc;
 import assert from "assert";
 // import { Long } from "bytebuffer";
 import { sha256, sha512 } from "./hash";
-import Long = require("long");
+import Long from "long";
 
 /** Provides symetric encrypt and decrypt via AES. */
 class Aes {

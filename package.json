@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
+    "doc": "rm -rf docs && typedoc --includes src/**/*.ts --exclude \"**/*+(.spec|.e2e).ts\" --tsconfig tsconfig.es.json --out docs",
     "test": "jest --verbose",
     "test:watch": "jest --watch --verbose"
   },
@@ -24,6 +25,7 @@
     "awesome-typescript-loader": "^5.2.1",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
     "typescript": "^3.5.2"
   },
   "dependencies": {

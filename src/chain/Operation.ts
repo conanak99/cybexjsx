@@ -1,5 +1,5 @@
-import { Serializer } from "../../serializer";
-import * as ops from "../../serializer/src/operations";
+import { Serializer } from "../serializer";
+import * as ops from "../serializer/operations";
 import { ChainTypes } from "./ChainTypes";
 export class Operation<T> {
   constructor(

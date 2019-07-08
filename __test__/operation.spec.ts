@@ -1,4 +1,4 @@
-import { OperationManager } from "./../src/chain/src/Operation";
+import { OperationManager } from "./../src/chain/Operation";
 
 describe("Operation 测试", () => {
   it("默认OperationManager", () => {

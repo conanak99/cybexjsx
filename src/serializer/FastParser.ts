@@ -1,4 +1,4 @@
-import PublicKey from "../../ecc/src/PublicKey";
+import PublicKey from "../ecc/PublicKey";
 
 class FastParser {
   static fixed_data(b, len, buffer?) {

@@ -1,7 +1,7 @@
 // const { Long } from "require("long")";
 import Long from "long";
 
-import v from "../../serializer/src/SerializerValidation";
+import v from "../serializer/SerializerValidation";
 
 var DB_MAX_INSTANCE_ID = Long.fromNumber(Math.pow(2, 48) - 1);
 

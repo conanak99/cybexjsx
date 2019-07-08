@@ -3,10 +3,10 @@
 import v from "./SerializerValidation";
 import fp from "./FastParser";
 
-import ChainTypes from "../../chain/src/ChainTypes";
-import ObjectId from "../../chain/src/ObjectId";
+import { ChainTypes } from "../chain/ChainTypes";
+import ObjectId from "../chain/ObjectId";
 
-import { PublicKey, Address } from "../../ecc";
+import { PublicKey, Address } from "../ecc";
 
 var Types: { [type: string]: any } = {};
 
