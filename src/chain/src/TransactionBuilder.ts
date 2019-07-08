@@ -6,44 +6,37 @@ import ChainTypes, { CybexTypes } from "./ChainTypes";
 import { ChainWebSocket } from "./../../connect/cybex-ws";
 import { SignedTransaction } from "../../serializer/src/operations";
 var head_block_time_string: any, committee_min_review: number;
-const DefaultTrParams: SignedTransaction = {
-  ref_block_num: 0,
-  ref_block_prefix: 0,
-  expiration: 0,
-  operations: [],
-  signatures: [],
-  extensions: []
+class DefaultTrParams implements SignedTransaction {
+  ref_block_num = 0;
+  ref_block_prefix = 0;
+  expiration = 0;
+  operations = [];
+  signatures = [];
+  extensions = [];
+}
+const DefaultOptions = {
+  tx: new DefaultTrParams(),
+  skipUpdate: false,
+  txExpiration: 30,
+  expire_in_secs_proposal: 60 * 60,
+  review_in_secs_committee: 60 * 60 * 24,
+  debug: false
 };
+type TBOptions = typeof DefaultOptions;
 class TransactionBuilder {
-  signer_private_keys: [PrivateKey, PublicKey][];
+  signer_private_keys: [PrivateKey, PublicKey][] = [];
   opManager = OperationManager.getOpManager();
   tr_buffer: Buffer;
-  tx: SignedTransaction;
+  tx: DefaultTrParams;
   signed = false;
+  options: TBOptions;
   chain_id: string = "";
-  options = {
-    skipUpdate: false,
-    txExpiration: 30,
-    expire_in_secs_proposal: 60 * 60,
-    review_in_secs_committee: 60 * 60 * 24
-  };
-  constructor(
-    public wsConnect: ChainWebSocket,
-    {
-      tx = DefaultTrParams,
-      skipUpdate = false,
-      txExpiration = 30,
-      expire_in_secs_proposal = 60 * 60,
-      review_in_secs_committee = 60 * 60 * 24
+  constructor(public wsConnect: ChainWebSocket, options?: Partial<TBOptions>) {
+    this.options = { ...DefaultOptions, ...options };
+    this.tx = (options && options.tx) || new DefaultTrParams();
+    if (!this.options.debug) {
+      this.debugLog = () => void 0;
     }
-  ) {
-    this.tx = tx;
-    this.options = {
-      skipUpdate,
-      txExpiration,
-      expire_in_secs_proposal,
-      review_in_secs_committee
-    };
   }
 
   /**
@@ -58,14 +51,16 @@ class TransactionBuilder {
   /** Typically this is called automatically just prior to signing.  Once finalized this transaction can not be changed. */
   async finalize(refBlockHeader?: CybexTypes.BlockHeader) {
     if (!this.options.skipUpdate && !refBlockHeader) {
+      this.debugLog("[Finalize Begin]", JSON.stringify(this.tx));
       let gdp: CybexTypes.GlobalDynamicProperty = (await this.wsConnect.api(
         "database"
       )("get_objects", ["2.1.0"]))[0];
       let refHeader = {
         block_num: gdp.last_irreversible_block_num - 1,
-        block_id: await (await this.wsConnect.api<CybexTypes.BlockHeader[]>(
-          "database"
-        )("get_block_header", [gdp.last_irreversible_block_num]))[0].previous
+        block_id: (await this.wsConnect.api<CybexTypes.BlockHeader>("database")(
+          "get_block_header",
+          gdp.last_irreversible_block_num
+        )).previous
       };
       this.tx.ref_block_num = refHeader.block_num & 0xffff;
       this.tx.ref_block_prefix = Buffer.from(
@@ -83,7 +78,9 @@ class TransactionBuilder {
         op[1].finalize();
       }
     }
-    return (this.tr_buffer = ops.transaction.toBuffer(this.tx));
+    this.tr_buffer = ops.transaction.toBuffer(this.tx);
+    this.debugLog("[Finalize]", this.tx, this.tr_buffer);
+    return;
   }
 
   /** @return {string} hex transaction ID */
@@ -143,6 +140,11 @@ class TransactionBuilder {
        */
       let requiresReview = false,
         extraReview = 0;
+      console.log(
+        "[get_type_operation]",
+        "[propose]",
+        JSON.stringify(operation)
+      );
       operation.proposed_ops.forEach(op => {
         const COMMITTE_ACCOUNT = 0;
         let key: string;
@@ -219,6 +221,10 @@ class TransactionBuilder {
     });
   }
 
+  debugLog(...params: any[]) {
+    console.debug(...params);
+  }
+
   /** optional: there is a deafult expiration */
   set_expire_seconds(sec: number) {
     if (this.tr_buffer) {
@@ -229,8 +235,8 @@ class TransactionBuilder {
 
   /* Wraps this transaction in a proposal_create transaction */
   propose(proposal_create_options: {
-    fee_paying_account: any;
-    proposed_ops: any;
+    fee_paying_account: CybexTypes.AccountID;
+    proposed_ops?: any;
   }) {
     if (this.tr_buffer) {
       throw new Error("already finalized");
@@ -238,13 +244,12 @@ class TransactionBuilder {
     if (!this.tx.operations.length) {
       throw new Error("add operation first");
     }
-
     assert(proposal_create_options, "proposal_create_options");
     assert(
       proposal_create_options.fee_paying_account,
       "proposal_create_options.fee_paying_account"
     );
-
+    console.log("[Propose]", JSON.stringify(this.tx));
     let proposed_ops = this.tx.operations.map((op: any) => {
       return { op: op };
     });
@@ -270,7 +275,7 @@ class TransactionBuilder {
   }
 
   /** optional: the fees can be obtained from the witness node */
-  async set_required_fees(asset_id: string) {
+  async set_required_fees(asset_id?: string) {
     let fee_pool: string;
     if (this.tr_buffer) {
       throw new Error("already finalized");
@@ -395,7 +400,6 @@ class TransactionBuilder {
   }
 
   async get_required_signatures(available_keys: { length: any }) {
-    console.log("AvL: ", available_keys);
     if (!available_keys.length) {
       return Promise.resolve([]);
     }
@@ -458,8 +462,9 @@ class TransactionBuilder {
     return ops.signed_transaction.toObject(this);
   }
 
-  _broadcast(was_broadcast_callback: CallableFunction) {
-    return new Promise((resolve, reject) => {
+  async _broadcast<R = any>(was_broadcast_callback: CallableFunction) {
+    this.debugLog("[_Broadcast]", JSON.stringify(this.tx));
+    return new Promise<R>((resolve, reject) => {
       if (!this.signed) {
         this.sign();
       }
@@ -473,15 +478,16 @@ class TransactionBuilder {
         throw new Error("no operations");
       }
 
-      var tr_object = ops.signed_transaction.toObject(this);
+      var tr_object = ops.signed_transaction.toObject(this.tx);
       // console.log('... broadcast_transaction_with_callback !!!')
       this.wsConnect
-        .api("network_broadcast")("broadcast_transaction_with_callback", [
-          function(res: unknown) {
+        .api("network_broadcast")(
+          "broadcast_transaction_with_callback",
+          function(res: any) {
             return resolve(res);
           },
           tr_object
-        ])
+        )
         .then(function() {
           //console.log('... broadcast success, waiting for callback')
           if (was_broadcast_callback) was_broadcast_callback();
@@ -513,12 +519,13 @@ class TransactionBuilder {
     });
   }
 
-  async broadcast(was_broadcast_callback: undefined) {
+  async broadcast<R = any>(was_broadcast_callback?: CallableFunction) {
+    this.debugLog("[Broadcast]", this.tr_buffer);
     if (this.tr_buffer) {
-      return this._broadcast(was_broadcast_callback);
+      return this._broadcast<R>(was_broadcast_callback);
     } else {
       return this.finalize().then(() => {
-        return this._broadcast(was_broadcast_callback);
+        return this._broadcast<R>(was_broadcast_callback);
       });
     }
   }

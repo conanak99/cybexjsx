@@ -1,0 +1,8 @@
+export const AccountParams = {
+  ACCOUNT_NAME: "test-user",
+  ACCOUNT_ID: "1.2.1431",
+  ACCOUNT_SEED: "12345678901234567890ab",
+  ACCOUNT_NAME_1: "test-user1",
+  ACCOUNT_ID_1: "1.2.1432",
+  ACCOUNT_SEED_1: "12345678901234567890ab"
+};

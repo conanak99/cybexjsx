@@ -1,5 +1,5 @@
 // import ChainStore from "./src/ChainStore";
-// import TransactionBuilder from "./src/TransactionBuilder";
+import TransactionBuilder from "./src/TransactionBuilder";
 import ChainTypes from "./src/ChainTypes";
 import ObjectId from "./src/ObjectId";
 import NumberUtils from "./src/NumberUtils";
@@ -11,7 +11,7 @@ import ChainValidation from "./src/ChainValidation";
 
 export {
   //   ChainStore,
-  //   TransactionBuilder,
+  TransactionBuilder,
   //   FetchChainObjects,
   ChainTypes,
   ObjectId,
