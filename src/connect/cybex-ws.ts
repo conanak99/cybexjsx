@@ -57,7 +57,7 @@ export class ChainWebSocket extends EventEmitter {
     return ws;
   }
   chainID: string = "";
-  apiIds = {};
+  apiIds: { [apiName: string]: number } = {};
   cbs = {};
   subs: {
     [id: string]: {
@@ -127,22 +127,22 @@ export class ChainWebSocket extends EventEmitter {
     if (!apis) {
       throw Error("Apis Error");
     }
-    this.apiIds["login"] = await this.api("login")("login", "", "");
+    this.apiIds["login"] = await this.api("login")("login")("", "");
     return Promise.all(
       apis.map(async apiType => {
-        let apiId = await this.api("login")(apiType);
+        let apiId: number = await this.api("login")(apiType)();
         this.apiIds[apiType] = apiId;
       })
     );
   }
 
   api<T = any>(apiName: string) {
-    return (method: string, ...rest: any[]) =>
-      this.call<T>(apiName, method, rest);
+    return (method: string) => (...params: any[]) =>
+      this.call<T>(apiName, method, params);
   }
 
   async updateChainID() {
-    this.chainID = await this.api("database")("get_chain_id");
+    this.chainID = await this.api("database")("get_chain_id")();
   }
 
   async call<T = any>(apiName: string, method: string, params: any[] = []) {

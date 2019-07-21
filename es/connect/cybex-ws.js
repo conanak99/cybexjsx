@@ -173,14 +173,14 @@ var ChainWebSocket = /** @class */ (function (_super) {
                         }
                         _a = this.apiIds;
                         _b = "login";
-                        return [4 /*yield*/, this.api("login")("login", "", "")];
+                        return [4 /*yield*/, this.api("login")("login")("", "")];
                     case 1:
                         _a[_b] = _c.sent();
                         return [2 /*return*/, Promise.all(apis.map(function (apiType) { return __awaiter(_this, void 0, void 0, function () {
                                 var apiId;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, this.api("login")(apiType)];
+                                        case 0: return [4 /*yield*/, this.api("login")(apiType)()];
                                         case 1:
                                             apiId = _a.sent();
                                             this.apiIds[apiType] = apiId;
@@ -194,13 +194,13 @@ var ChainWebSocket = /** @class */ (function (_super) {
     };
     ChainWebSocket.prototype.api = function (apiName) {
         var _this = this;
-        return function (method) {
-            var rest = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                rest[_i - 1] = arguments[_i];
+        return function (method) { return function () {
+            var params = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                params[_i] = arguments[_i];
             }
-            return _this.call(apiName, method, rest);
-        };
+            return _this.call(apiName, method, params);
+        }; };
     };
     ChainWebSocket.prototype.updateChainID = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -209,7 +209,7 @@ var ChainWebSocket = /** @class */ (function (_super) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
-                        return [4 /*yield*/, this.api("database")("get_chain_id")];
+                        return [4 /*yield*/, this.api("database")("get_chain_id")()];
                     case 1:
                         _a.chainID = _b.sent();
                         return [2 /*return*/];

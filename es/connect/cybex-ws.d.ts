@@ -23,7 +23,9 @@ export declare class ChainWebSocket extends EventEmitter {
     static DefaultWsConfig: Partial<ChainWsConfig>;
     static getInstanceWithWs(url: string, config?: Partial<ChainWsConfig>): Promise<ChainWebSocket>;
     chainID: string;
-    apiIds: {};
+    apiIds: {
+        [apiName: string]: number;
+    };
     cbs: {};
     subs: {
         [id: string]: {
@@ -43,7 +45,7 @@ export declare class ChainWebSocket extends EventEmitter {
     initState(): void;
     connect(restoreState?: boolean): Promise<void>;
     login(apis?: string[]): Promise<void[]>;
-    api<T = any>(apiName: string): (method: string, ...rest: any[]) => Promise<T>;
+    api<T = any>(apiName: string): (method: string) => (...params: any[]) => Promise<T>;
     updateChainID(): Promise<void>;
     call<T = any>(apiName: string, method: string, params?: any[]): Promise<T>;
     private listener;

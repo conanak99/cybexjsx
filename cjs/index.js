@@ -1,4 +1,11 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 console.log("Greeting from Cybex~");
 var cybex_ws_1 = require("./connect/cybex-ws");
@@ -20,3 +27,5 @@ exports.PublicKey = ecc_1.PublicKey;
 exports.Address = ecc_1.Address;
 exports.Aes = ecc_1.Aes;
 exports.hash = ecc_1.hash;
+const Utils = __importStar(require("./utils"));
+exports.Utils = Utils;

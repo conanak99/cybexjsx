@@ -8,7 +8,7 @@ describe("Connect 测试", () => {
   }, 3000);
 
   it("Test Get ChainID", async done => {
-    let chainID = await ws.api("database")("get_chain_id");
+    let chainID = await ws.api("database")("get_chain_id")();
     expect(chainID).toBe(
       "ab1a36b889e21d2803219d379d10d39ff282b0399934946b1d5b799ceeb9fded"
     );
@@ -16,7 +16,7 @@ describe("Connect 测试", () => {
   }, 5000);
 
   it("Test reject after connect disconntion", async done => {
-    let chainIDPromise = ws.api("database")("get_chain_id");
+    let chainIDPromise = ws.api("database")("get_chain_id")();
     setTimeout(() => ws.close(), 10);
     await expect(chainIDPromise).rejects.toBe("Connection Closed");
     done();

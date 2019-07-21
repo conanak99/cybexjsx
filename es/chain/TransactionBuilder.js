@@ -98,13 +98,13 @@ var TransactionBuilder = /** @class */ (function () {
                     case 0:
                         if (!(!this.options.skipUpdate && !refBlockHeader)) return [3 /*break*/, 3];
                         this.debugLog("[Finalize Begin]", JSON.stringify(this.tx));
-                        return [4 /*yield*/, this.wsConnect.api("database")("get_objects", ["2.1.0"])];
+                        return [4 /*yield*/, this.wsConnect.api("database")("get_objects")(["2.1.0"])];
                     case 1:
                         gdp = (_b.sent())[0];
                         _a = {
                             block_num: gdp.last_irreversible_block_num - 1
                         };
-                        return [4 /*yield*/, this.wsConnect.api("database")("get_block_header", gdp.last_irreversible_block_num)];
+                        return [4 /*yield*/, this.wsConnect.api("database")("get_block_header")(gdp.last_irreversible_block_num)];
                     case 2:
                         refHeader = (_a.block_id = (_b.sent()).previous,
                             _a);
@@ -241,8 +241,8 @@ var TransactionBuilder = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, Promise.all([
-                        this.wsConnect.api("database")("get_objects", ["2.0.0"]),
-                        this.wsConnect.api("database")("get_objects", ["2.1.0"])
+                        this.wsConnect.api("database")("get_objects")(["2.0.0"]),
+                        this.wsConnect.api("database")("get_objects")(["2.1.0"])
                     ]).then(function (res) {
                         var g = res[0], r = res[1];
                         head_block_time_string = r[0].time;
@@ -323,19 +323,19 @@ var TransactionBuilder = /** @class */ (function () {
                     }
                 }
                 promises = [
-                    this.wsConnect.api("database")("get_required_fees", operations, asset_id)
+                    this.wsConnect.api("database")("get_required_fees")(operations, asset_id)
                 ];
                 if (asset_id !== "1.3.0") {
                     // This handles the fallback to paying fees in CYB if the fee pool is empty.
-                    promises.push(this.wsConnect.api("database")("get_required_fees", operations, "1.3.0"));
-                    promises.push(this.wsConnect.api("database")("get_objects", [asset_id]));
+                    promises.push(this.wsConnect.api("database")("get_required_fees")(operations, "1.3.0"));
+                    promises.push(this.wsConnect.api("database")("get_objects")([asset_id]));
                 }
                 return [2 /*return*/, Promise.all(promises)
                         .then(function (results) {
                         fees = results[0], coreFees = results[1], asset = results[2];
                         asset = asset ? asset[0] : null;
                         var dynamicPromise = asset_id !== "1.3.0" && asset
-                            ? _this.wsConnect.api("database")("get_objects", [
+                            ? _this.wsConnect.api("database")("get_objects")([
                                 asset.dynamic_asset_data_id
                             ])
                             : new Promise(function (resolve) { return resolve(); });
@@ -403,8 +403,8 @@ var TransactionBuilder = /** @class */ (function () {
             return __generator(this, function (_a) {
                 tr_object = ops.signed_transaction.toObject(this);
                 return [2 /*return*/, Promise.all([
-                        this.wsConnect.api("database")("get_potential_signatures", tr_object),
-                        this.wsConnect.api("database")("get_potential_address_signatures", tr_object)
+                        this.wsConnect.api("database")("get_potential_signatures")(tr_object),
+                        this.wsConnect.api("database")("get_potential_address_signatures")(tr_object)
                     ]).then(function (results) {
                         return { pubkeys: results[0], addys: results[1] };
                     })];
@@ -421,7 +421,7 @@ var TransactionBuilder = /** @class */ (function () {
                 tr_object = ops.signed_transaction.toObject(this);
                 //DEBUG console.log('... tr_object',tr_object)
                 return [2 /*return*/, this.wsConnect
-                        .api("database")("get_required_signatures", tr_object, available_keys)
+                        .api("database")("get_required_signatures")(tr_object, available_keys)
                         .then(function (required_public_keys) {
                         //DEBUG console.log('... get_required_signatures',required_public_keys)
                         return required_public_keys;
@@ -492,7 +492,7 @@ var TransactionBuilder = /** @class */ (function () {
                         var tr_object = ops.signed_transaction.toObject(_this.tx);
                         // console.log('... broadcast_transaction_with_callback !!!')
                         _this.wsConnect
-                            .api("network_broadcast")("broadcast_transaction_with_callback", function (res) {
+                            .api("network_broadcast")("broadcast_transaction_with_callback")(function (res) {
                             return resolve(res);
                         }, tr_object)
                             .then(function () {
