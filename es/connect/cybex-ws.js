@@ -71,6 +71,7 @@ var ChainWebSocket = /** @class */ (function (_super) {
     function ChainWebSocket(config) {
         var _this = _super.call(this) || this;
         _this.config = config;
+        _this.chainID = "";
         _this.apiIds = {};
         _this.cbs = {};
         _this.subs = {};
@@ -142,15 +143,18 @@ var ChainWebSocket = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.login()];
                     case 2:
                         _a.sent();
-                        if (!restoreState) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.updateChainID()];
+                    case 3:
+                        _a.sent();
+                        if (!restoreState) return [3 /*break*/, 5];
                         rawSubs_1 = this.subs;
                         return [4 /*yield*/, Promise.all(Object.keys(this.subs)
                                 .map(function (id) { return rawSubs_1[id].rawCall; })
                                 .map(function (call) { return _this.call(call.apiName, call.method, call.params); }))];
-                    case 3:
+                    case 4:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });
@@ -197,6 +201,21 @@ var ChainWebSocket = /** @class */ (function (_super) {
             }
             return _this.call(apiName, method, rest);
         };
+    };
+    ChainWebSocket.prototype.updateChainID = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this;
+                        return [4 /*yield*/, this.api("database")("get_chain_id")];
+                    case 1:
+                        _a.chainID = _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     ChainWebSocket.prototype.call = function (apiName, method, params) {
         if (params === void 0) { params = []; }

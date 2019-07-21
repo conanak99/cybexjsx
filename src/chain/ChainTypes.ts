@@ -5,7 +5,7 @@ const ChainTypes: {
   impl_object_type: TypePairs;
   vote_type: TypePairs;
   operations: TypePairs;
-} = {
+} & object = {
   reserved_spaces: {
     relative_protocol_ids: 0,
     protocol_ids: 1,
@@ -103,6 +103,14 @@ const ChainTypes: {
     withdraw_crowdfund: 47
   }
 };
+
+export function registerChainType(
+  cate: keyof typeof ChainTypes & string,
+  type: string,
+  id: number
+) {
+  return (ChainTypes[cate] = { ...ChainTypes[cate], ...{ [type]: id } });
+}
 
 export namespace CybexTypes {
   export type DateStr = string;

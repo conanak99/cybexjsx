@@ -2,11 +2,11 @@
   "name": "cybexjsx",
   "version": "0.0.1",
   "description": "a js lib for Cybex chain",
-  "main": "ejs/index.js",
+  "main": "es/index.js",
   "author": "ldwformat@gmail.com",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
+    "build": "rm -rf es cjs && tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
     "doc": "rm -rf docs && typedoc --includes src/**/*.ts --exclude \"**/*+(.spec|.e2e).ts\" --tsconfig tsconfig.es.json --out docs",
     "test": "jest --verbose",
     "test:watch": "jest --watch --verbose"
