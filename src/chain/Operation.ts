@@ -20,6 +20,7 @@ export class OperationManager {
   constructor(public ops: Operation<any>[] = DefaultOps || []) {}
   addOpConfig<T = any>(op: Operation<T>) {
     this.ops.push(op);
+    ops.operation.st_operations[op.opID] = op.serializer;
   }
   getOperationByName(name: string) {
     return this.ops.find(op => op.name === name);

@@ -285,7 +285,10 @@ export class TransactionBuilder {
     let operations = [];
     for (let i = 0, op: any; i < this.tx.operations.length; i++) {
       op = this.tx.operations[i];
-      operations.push(ops.operation.toObject(op));
+      let opObject = this.opManager
+        .getOperationByOpID(op[0])
+        .serializer.toObject(op[1]);
+      operations.push([op[0], opObject]);
     }
 
     if (!asset_id) {
