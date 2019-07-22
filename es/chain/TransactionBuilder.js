@@ -299,7 +299,7 @@ var TransactionBuilder = /** @class */ (function () {
     /** optional: the fees can be obtained from the witness node */
     TransactionBuilder.prototype.set_required_fees = function (asset_id) {
         return __awaiter(this, void 0, void 0, function () {
-            var fee_pool, operations, i, op, op1_fee, promises, fees, coreFees, asset;
+            var fee_pool, operations, i, op, opObject, op1_fee, promises, fees, coreFees, asset;
             var _this = this;
             return __generator(this, function (_a) {
                 if (this.tr_buffer) {
@@ -311,7 +311,10 @@ var TransactionBuilder = /** @class */ (function () {
                 operations = [];
                 for (i = 0, op = void 0; i < this.tx.operations.length; i++) {
                     op = this.tx.operations[i];
-                    operations.push(ops.operation.toObject(op));
+                    opObject = this.opManager
+                        .getOperationByOpID(op[0])
+                        .serializer.toObject(op[1]);
+                    operations.push([op[0], opObject]);
                 }
                 if (!asset_id) {
                     op1_fee = operations[0][1].fee;

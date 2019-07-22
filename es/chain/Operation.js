@@ -20,6 +20,7 @@ var OperationManager = /** @class */ (function () {
     };
     OperationManager.prototype.addOpConfig = function (op) {
         this.ops.push(op);
+        ops.operation.st_operations[op.opID] = op.serializer;
     };
     OperationManager.prototype.getOperationByName = function (name) {
         return this.ops.find(function (op) { return op.name === name; });
