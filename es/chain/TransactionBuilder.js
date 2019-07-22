@@ -97,7 +97,7 @@ var TransactionBuilder = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         if (!(!this.options.skipUpdate && !refBlockHeader)) return [3 /*break*/, 3];
-                        this.debugLog("[Finalize Begin]", JSON.stringify(this.tx));
+                        this.debugLog("[Finalize Begin]", this.tx);
                         return [4 /*yield*/, this.wsConnect.api("database")("get_objects")(["2.1.0"])];
                     case 1:
                         gdp = (_b.sent())[0];
@@ -175,7 +175,12 @@ var TransactionBuilder = /** @class */ (function () {
              * period to be set, look for them here
              */
             var requiresReview_1 = false, extraReview_1 = 0;
-            console.log("[get_type_operation]", "[propose]", JSON.stringify(operation));
+            try {
+                console.log("[get_type_operation]", "[propose]", JSON.stringify(operation));
+            }
+            catch (e) {
+                console.error("[get_type_operation]", "[propose]", e);
+            }
             operation.proposed_ops.forEach(function (op) {
                 var COMMITTE_ACCOUNT = 0;
                 var key;
@@ -256,7 +261,12 @@ var TransactionBuilder = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             params[_i] = arguments[_i];
         }
-        console.debug.apply(console, params);
+        try {
+            console.debug.apply(console, params);
+        }
+        catch (e) {
+            console.error(e);
+        }
     };
     /** optional: there is a deafult expiration */
     TransactionBuilder.prototype.set_expire_seconds = function (sec) {
@@ -275,7 +285,6 @@ var TransactionBuilder = /** @class */ (function () {
         }
         assert(proposal_create_options, "proposal_create_options");
         assert(proposal_create_options.fee_paying_account, "proposal_create_options.fee_paying_account");
-        console.log("[Propose]", JSON.stringify(this.tx));
         var proposed_ops = this.tx.operations.map(function (op) {
             return { op: op };
         });
@@ -478,7 +487,7 @@ var TransactionBuilder = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                this.debugLog("[_Broadcast]", JSON.stringify(this.tx));
+                this.debugLog("[_Broadcast]", this.tx);
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (!_this.signed) {
                             _this.sign();

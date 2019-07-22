@@ -4,7 +4,7 @@ export declare class Serializer<T> {
     operation_name: any;
     types: any;
     keys: any;
-    constructor(operation_name: any, types?: any);
+    constructor(operation_name: any, types?: any, orderedKey?: string[]);
     fromByteBuffer(b: any): {};
     appendByteBuffer(b: any, object: any): void;
     fromObject(serialized_object: T): Serializer<T>;

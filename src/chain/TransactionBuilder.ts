@@ -51,7 +51,7 @@ export class TransactionBuilder {
   /** Typically this is called automatically just prior to signing.  Once finalized this transaction can not be changed. */
   async finalize(refBlockHeader?: CybexTypes.BlockHeader) {
     if (!this.options.skipUpdate && !refBlockHeader) {
-      this.debugLog("[Finalize Begin]", JSON.stringify(this.tx));
+      this.debugLog("[Finalize Begin]", this.tx);
       let gdp: CybexTypes.GlobalDynamicProperty = (await this.wsConnect.api(
         "database"
       )("get_objects")(["2.1.0"]))[0];
@@ -139,11 +139,15 @@ export class TransactionBuilder {
        */
       let requiresReview = false,
         extraReview = 0;
-      console.log(
-        "[get_type_operation]",
-        "[propose]",
-        JSON.stringify(operation)
-      );
+      try {
+        console.log(
+          "[get_type_operation]",
+          "[propose]",
+          JSON.stringify(operation)
+        );
+      } catch (e) {
+        console.error("[get_type_operation]", "[propose]", e);
+      }
       operation.proposed_ops.forEach(op => {
         const COMMITTE_ACCOUNT = 0;
         let key: string;
@@ -221,7 +225,11 @@ export class TransactionBuilder {
   }
 
   debugLog(...params: any[]) {
-    console.debug(...params);
+    try {
+      console.debug(...params);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /** optional: there is a deafult expiration */
@@ -248,7 +256,6 @@ export class TransactionBuilder {
       proposal_create_options.fee_paying_account,
       "proposal_create_options.fee_paying_account"
     );
-    console.log("[Propose]", JSON.stringify(this.tx));
     let proposed_ops = this.tx.operations.map((op: any) => {
       return { op: op };
     });
@@ -464,7 +471,7 @@ export class TransactionBuilder {
   }
 
   async _broadcast<R = any>(was_broadcast_callback: CallableFunction) {
-    this.debugLog("[_Broadcast]", JSON.stringify(this.tx));
+    this.debugLog("[_Broadcast]", this.tx);
     return new Promise<R>((resolve, reject) => {
       if (!this.signed) {
         this.sign();

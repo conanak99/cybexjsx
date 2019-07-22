@@ -10,11 +10,11 @@ export class Serializer<T> {
   operation_name;
   types;
   keys;
-  constructor(operation_name, types?) {
+  constructor(operation_name, types?, orderedKey?: string[]) {
     this.operation_name = operation_name;
     this.types = types;
     if (this.types) {
-      this.keys = Object.keys(this.types);
+      this.keys = orderedKey || Object.keys(this.types);
     }
 
     Serializer.printDebug = true;

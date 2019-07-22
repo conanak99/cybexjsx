@@ -2,11 +2,11 @@ import ByteBuffer from "bytebuffer";
 import EC from "./error_with_cause";
 var HEX_DUMP = process && process.env.npm_config__graphene_serializer_hex_dump;
 var Serializer = /** @class */ (function () {
-    function Serializer(operation_name, types) {
+    function Serializer(operation_name, types, orderedKey) {
         this.operation_name = operation_name;
         this.types = types;
         if (this.types) {
-            this.keys = Object.keys(this.types);
+            this.keys = orderedKey || Object.keys(this.types);
         }
         Serializer.printDebug = true;
     }
