@@ -14,9 +14,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const wolfy87_eventemitter_1 = __importDefault(require("wolfy87-eventemitter"));
 const assert_1 = __importDefault(require("assert"));
 const rpc_models_1 = require("./rpc-models");
+const ws_1 = __importDefault(require("ws"));
 function getWebSocketClient() {
-    if (typeof WebSocket !== "undefined" && typeof document !== "undefined") {
-        return WebSocket;
+    if (typeof ws_1.default !== "undefined" && typeof document !== "undefined") {
+        return ws_1.default;
     }
     return null;
 }
@@ -53,8 +54,8 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             assert_1.default(this.config.url, "Ws url must be provided");
             this.initState();
-            let _openEvent = yield new Promise(resolve => {
-                this.ws = new WebSocket(this.config.url);
+            let _openEvent = yield new Promise((resolve) => {
+                this.ws = new ws_1.default(this.config.url);
                 this.ws.addEventListener("open", (e) => {
                     console.info("WsConnect Open");
                     resolve(e);
@@ -67,7 +68,7 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
                         this.connect(this.config.autoRestoreStateAfterReconnect);
                     }
                 });
-                this.ws.addEventListener("message", msg => {
+                this.ws.addEventListener("message", (msg) => {
                     this.log(typeof msg.data, msg.data);
                     this.listener(rpc_models_1.convertResultUniversal(JSON.parse(msg.data)));
                 });
@@ -77,8 +78,8 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
             if (restoreState) {
                 let rawSubs = this.subs;
                 yield Promise.all(Object.keys(this.subs)
-                    .map(id => rawSubs[id].rawCall)
-                    .map(call => this.call(call.apiName, call.method, call.params)));
+                    .map((id) => rawSubs[id].rawCall)
+                    .map((call) => this.call(call.apiName, call.method, call.params)));
             }
         });
     }
@@ -116,9 +117,9 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
                     rawCall: {
                         apiName,
                         method,
-                        params: [...params]
+                        params: [...params],
                     },
-                    callback: params[0]
+                    callback: params[0],
                 };
                 // Replace callback with the callback id
                 params[0] = callId;
@@ -139,14 +140,14 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
             let request = {
                 id: callId,
                 method: "call",
-                params: [apiId, method, params]
+                params: [apiId, method, params],
             };
             // this.send_life = max_send_life;
             return new Promise((resolve, reject) => {
                 this.cbs[callId] = {
                     time: new Date(),
                     resolve,
-                    reject
+                    reject,
                 };
                 this.ws.send(JSON.stringify(request));
             });
@@ -155,12 +156,12 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
     listener(response) {
         return __awaiter(this, void 0, void 0, function* () {
             return response
-                .then(res => this.pickCallback(res.id, res.isSub).resolve(res.result))
+                .then((res) => this.pickCallback(res.id, res.isSub).resolve(res.result))
                 .catch((errRes) => {
                 console.error("Error Response: ", errRes);
                 this.pickCallback(errRes.id).reject(errRes.result);
             })
-                .catch(err => console.error("RPC Response Error: ", err));
+                .catch((err) => console.error("RPC Response Error: ", err));
         });
     }
     pickCallback(id, isSub = false) {
@@ -180,10 +181,10 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
         return callback;
     }
     rejectAllCbs() {
-        Object.keys(this.cbs).forEach(id => this.listener(rpc_models_1.convertResultUniversal({
+        Object.keys(this.cbs).forEach((id) => this.listener(rpc_models_1.convertResultUniversal({
             jsonrpc: "2.0",
             error: "Connection Closed",
-            id
+            id,
         })));
     }
     close() {
@@ -196,17 +197,17 @@ class ChainWebSocket extends wolfy87_eventemitter_1.default {
     }
 }
 ChainWebSocket.WsEvents = {
-    DISCONNECT: "DISCONNECT"
+    DISCONNECT: "DISCONNECT",
 };
 ChainWebSocket.DefaultSubMothods = new Set([
     "set_subscribe_callback",
     "subscribe_to_market",
     "broadcast_transaction_with_callback",
-    "set_pending_transaction_callback"
+    "set_pending_transaction_callback",
 ]);
 ChainWebSocket.DefaultUnsubMothods = new Set([
     "unsubscribe_from_accounts",
-    "unsubscribe_from_market"
+    "unsubscribe_from_market",
 ]);
 ChainWebSocket.DefaultApiType = ["database", "history", "network_broadcast"];
 ChainWebSocket.DefaultWsConfig = {
@@ -216,7 +217,7 @@ ChainWebSocket.DefaultWsConfig = {
     unsubMethods: ChainWebSocket.DefaultUnsubMothods,
     debugMode: false,
     autoRestoreStateAfterReconnect: false,
-    autoReconnect: false
+    autoReconnect: false,
 };
 exports.ChainWebSocket = ChainWebSocket;
 exports.default = ChainWebSocket;

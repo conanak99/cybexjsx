@@ -41,7 +41,8 @@
     "deep-equal": "^1.0.1",
     "ecurve": "^1.0.6",
     "secure-random": "^1.1.2",
-    "wolfy87-eventemitter": "^5.2.6"
+    "wolfy87-eventemitter": "^5.2.6",
+    "ws": "^7.4.2"
   },
   "jest": {
     "transform": {

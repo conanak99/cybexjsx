@@ -1,4 +1,5 @@
 import EventEmitter from "wolfy87-eventemitter";
+import WebSocket from "ws";
 declare type ChainWsConfig = {
     wsClient: typeof WebSocket;
     keepAliveInterval: number;

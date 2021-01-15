@@ -60,6 +60,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import EventEmitter from "wolfy87-eventemitter";
 import assert from "assert";
 import { convertResultUniversal } from "./rpc-models";
+import WebSocket from "ws";
 function getWebSocketClient() {
     if (typeof WebSocket !== "undefined" && typeof document !== "undefined") {
         return WebSocket;
@@ -234,9 +235,9 @@ var ChainWebSocket = /** @class */ (function (_super) {
                         rawCall: {
                             apiName: apiName,
                             method: method,
-                            params: params.slice()
+                            params: params.slice(),
                         },
-                        callback: params[0]
+                        callback: params[0],
                     };
                     // Replace callback with the callback id
                     params[0] = callId;
@@ -257,14 +258,14 @@ var ChainWebSocket = /** @class */ (function (_super) {
                 request = {
                     id: callId,
                     method: "call",
-                    params: [apiId, method, params]
+                    params: [apiId, method, params],
                 };
                 // this.send_life = max_send_life;
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         _this.cbs[callId] = {
                             time: new Date(),
                             resolve: resolve,
-                            reject: reject
+                            reject: reject,
                         };
                         _this.ws.send(JSON.stringify(request));
                     })];
@@ -308,7 +309,7 @@ var ChainWebSocket = /** @class */ (function (_super) {
             return _this.listener(convertResultUniversal({
                 jsonrpc: "2.0",
                 error: "Connection Closed",
-                id: id
+                id: id,
             }));
         });
     };
@@ -325,17 +326,17 @@ var ChainWebSocket = /** @class */ (function (_super) {
         }
     };
     ChainWebSocket.WsEvents = {
-        DISCONNECT: "DISCONNECT"
+        DISCONNECT: "DISCONNECT",
     };
     ChainWebSocket.DefaultSubMothods = new Set([
         "set_subscribe_callback",
         "subscribe_to_market",
         "broadcast_transaction_with_callback",
-        "set_pending_transaction_callback"
+        "set_pending_transaction_callback",
     ]);
     ChainWebSocket.DefaultUnsubMothods = new Set([
         "unsubscribe_from_accounts",
-        "unsubscribe_from_market"
+        "unsubscribe_from_market",
     ]);
     ChainWebSocket.DefaultApiType = ["database", "history", "network_broadcast"];
     ChainWebSocket.DefaultWsConfig = {
@@ -345,7 +346,7 @@ var ChainWebSocket = /** @class */ (function (_super) {
         unsubMethods: ChainWebSocket.DefaultUnsubMothods,
         debugMode: false,
         autoRestoreStateAfterReconnect: false,
-        autoReconnect: false
+        autoReconnect: false,
     };
     return ChainWebSocket;
 }(EventEmitter));

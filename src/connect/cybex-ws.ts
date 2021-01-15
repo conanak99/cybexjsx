@@ -1,6 +1,7 @@
 import EventEmitter from "wolfy87-eventemitter";
 import assert from "assert";
 import { RPCResultUniversal, convertResultUniversal } from "./rpc-models";
+import WebSocket from "ws";
 
 function getWebSocketClient() {
   if (typeof WebSocket !== "undefined" && typeof document !== "undefined") {
@@ -25,17 +26,17 @@ type ChainWsConfig = {
 
 export class ChainWebSocket extends EventEmitter {
   static WsEvents = {
-    DISCONNECT: "DISCONNECT"
+    DISCONNECT: "DISCONNECT",
   };
   static DefaultSubMothods = new Set([
     "set_subscribe_callback",
     "subscribe_to_market",
     "broadcast_transaction_with_callback",
-    "set_pending_transaction_callback"
+    "set_pending_transaction_callback",
   ]);
   static DefaultUnsubMothods = new Set([
     "unsubscribe_from_accounts",
-    "unsubscribe_from_market"
+    "unsubscribe_from_market",
   ]);
   static DefaultApiType = ["database", "history", "network_broadcast"];
   static DefaultWsConfig: Partial<ChainWsConfig> = {
@@ -45,7 +46,7 @@ export class ChainWebSocket extends EventEmitter {
     unsubMethods: ChainWebSocket.DefaultUnsubMothods,
     debugMode: false,
     autoRestoreStateAfterReconnect: false,
-    autoReconnect: false
+    autoReconnect: false,
   };
   static async getInstanceWithWs(
     url: string,
@@ -91,7 +92,7 @@ export class ChainWebSocket extends EventEmitter {
   async connect(restoreState = false) {
     assert(this.config.url, "Ws url must be provided");
     this.initState();
-    let _openEvent = await new Promise(resolve => {
+    let _openEvent = await new Promise((resolve) => {
       this.ws = new WebSocket(this.config.url);
       this.ws.addEventListener("open", (e: any) => {
         console.info("WsConnect Open");
@@ -105,7 +106,7 @@ export class ChainWebSocket extends EventEmitter {
           this.connect(this.config.autoRestoreStateAfterReconnect);
         }
       });
-      this.ws.addEventListener("message", msg => {
+      this.ws.addEventListener("message", (msg) => {
         this.log(typeof msg.data, msg.data);
         this.listener(convertResultUniversal(JSON.parse(msg.data)));
       });
@@ -116,8 +117,8 @@ export class ChainWebSocket extends EventEmitter {
       let rawSubs = this.subs;
       await Promise.all(
         Object.keys(this.subs)
-          .map(id => rawSubs[id].rawCall)
-          .map(call => this.call(call.apiName, call.method, call.params))
+          .map((id) => rawSubs[id].rawCall)
+          .map((call) => this.call(call.apiName, call.method, call.params))
       );
     }
   }
@@ -129,7 +130,7 @@ export class ChainWebSocket extends EventEmitter {
     }
     this.apiIds["login"] = await this.api("login")("login")("", "");
     return Promise.all(
-      apis.map(async apiType => {
+      apis.map(async (apiType) => {
         let apiId: number = await this.api("login")(apiType)();
         this.apiIds[apiType] = apiId;
       })
@@ -160,9 +161,9 @@ export class ChainWebSocket extends EventEmitter {
         rawCall: {
           apiName,
           method,
-          params: [...params]
+          params: [...params],
         },
-        callback: params[0]
+        callback: params[0],
       };
 
       // Replace callback with the callback id
@@ -190,7 +191,7 @@ export class ChainWebSocket extends EventEmitter {
     let request = {
       id: callId,
       method: "call",
-      params: [apiId, method, params]
+      params: [apiId, method, params],
     };
     // this.send_life = max_send_life;
 
@@ -198,7 +199,7 @@ export class ChainWebSocket extends EventEmitter {
       this.cbs[callId] = {
         time: new Date(),
         resolve,
-        reject
+        reject,
       };
       this.ws.send(JSON.stringify(request));
     });
@@ -206,12 +207,12 @@ export class ChainWebSocket extends EventEmitter {
 
   private async listener(response: Promise<RPCResultUniversal>) {
     return response
-      .then(res => this.pickCallback(res.id, res.isSub).resolve(res.result))
+      .then((res) => this.pickCallback(res.id, res.isSub).resolve(res.result))
       .catch((errRes: RPCResultUniversal) => {
         console.error("Error Response: ", errRes);
         this.pickCallback(errRes.id).reject(errRes.result);
       })
-      .catch(err => console.error("RPC Response Error: ", err));
+      .catch((err) => console.error("RPC Response Error: ", err));
   }
 
   private pickCallback(
@@ -234,12 +235,12 @@ export class ChainWebSocket extends EventEmitter {
   }
 
   private rejectAllCbs() {
-    Object.keys(this.cbs).forEach(id =>
+    Object.keys(this.cbs).forEach((id) =>
       this.listener(
         convertResultUniversal({
           jsonrpc: "2.0",
           error: "Connection Closed",
-          id
+          id,
         })
       )
     );
