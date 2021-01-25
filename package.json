@@ -5,6 +5,10 @@
   "main": "cjs/index.js",
   "author": "ldwformat@gmail.com",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conanak99/cybexjsx.git"
+  },
   "scripts": {
     "build": "rm -rf es cjs && tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
     "doc": "rm -rf docs && typedoc --includes src/**/*.ts --exclude \"**/*+(.spec|.e2e).ts\" --tsconfig tsconfig.es.json --out docs",
